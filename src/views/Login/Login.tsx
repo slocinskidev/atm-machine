@@ -8,9 +8,8 @@ import { Link } from 'react-router-dom';
 
 import PageTitle from 'components/PageTitle';
 
-import { LoginProps } from './model';
-
 import { APP_TITLE, VIEW_TITLE_LOGIN } from 'utils/constants';
+import { LoginProps } from './model.d';
 
 const useStyles = makeStyles(() =>
   createStyles({
@@ -20,7 +19,7 @@ const useStyles = makeStyles(() =>
       flexDirection: 'row',
       justifyContent: 'center',
     },
-  })
+  }),
 );
 
 const Login: FC<LoginProps> = (): ReactElement => {
@@ -36,18 +35,8 @@ const Login: FC<LoginProps> = (): ReactElement => {
       <Grid container spacing={3} justifyContent="center">
         <Grid item xs={12}>
           <form className={classes.root} noValidate autoComplete="off">
-            <TextField
-              id="outlined-password-input"
-              label="Enter your PIN"
-              type="password"
-              variant="outlined"
-            />
-            <Button
-              variant="contained"
-              color="primary"
-              component={Link}
-              to="/menu"
-            >
+            <TextField id="outlined-password-input" label="Enter your PIN" type="password" variant="outlined" />
+            <Button variant="contained" color="primary" component={Link} to="/menu">
               Next
             </Button>
           </form>

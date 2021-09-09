@@ -1,10 +1,5 @@
 import { useReducer, createContext, FC, ReactElement } from 'react';
-import {
-  createTheme,
-  Theme,
-  responsiveFontSizes,
-  ThemeProvider,
-} from '@material-ui/core/styles';
+import { createTheme, Theme, responsiveFontSizes, ThemeProvider } from '@material-ui/core/styles';
 import { BrowserRouter as Router, Switch, Route } from 'react-router-dom';
 import { Helmet } from 'react-helmet';
 
@@ -17,17 +12,14 @@ import AccountInfo from 'views/AccountInfo';
 import { lightTheme, darkTheme } from 'theme';
 
 import { APP_TITLE } from 'utils/constants';
-import { routes } from 'routes';
+import routes from 'routes';
 
-import { RootProps } from './model';
+import { RootProps } from './model.d';
 
 const AppContext = createContext(null);
 
 const App: FC<RootProps> = (): ReactElement => {
-  const [useDefaultTheme, toggle] = useReducer(
-    (theme: Theme | boolean) => !theme,
-    true
-  );
+  const [useDefaultTheme, toggle] = useReducer((theme: Theme | boolean) => !theme, true);
 
   let theme: Theme = createTheme(useDefaultTheme ? lightTheme : darkTheme);
   theme = responsiveFontSizes(theme);

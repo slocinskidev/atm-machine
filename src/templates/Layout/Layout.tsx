@@ -1,18 +1,12 @@
 import { FC } from 'react';
-import {
-  makeStyles,
-  createStyles,
-  Theme,
-  CssBaseline,
-} from '@material-ui/core';
-
-import { LayoutProps } from './model';
+import { makeStyles, createStyles, Theme, CssBaseline } from '@material-ui/core';
 
 import Header from 'components/Header';
 import Footer from 'components/Footer';
 import Paper from '@material-ui/core/Paper';
 
 import { FOOTER_HEIGHT, HEADER_HEIGHT, PAGE_MAX_WIDTH } from 'utils/constants';
+import { LayoutProps } from './model.d';
 
 const useStyles = makeStyles((theme: Theme) =>
   createStyles({
@@ -33,14 +27,10 @@ const useStyles = makeStyles((theme: Theme) =>
     wrapper: {
       padding: '3rem 0',
     },
-  })
+  }),
 );
 
-const Layout: FC<LayoutProps> = ({
-  toggleTheme,
-  useDefaultTheme,
-  children,
-}) => {
+const Layout: FC<LayoutProps> = ({ toggleTheme, useDefaultTheme, children }) => {
   const classes = useStyles();
 
   return (

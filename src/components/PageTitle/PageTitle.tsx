@@ -1,7 +1,7 @@
 import { FC } from 'react';
 import { createStyles, makeStyles, Typography } from '@material-ui/core';
 
-import { PageTitleProps } from './model';
+import { PageTitleProps } from './model.d';
 
 const useStyles = makeStyles(() =>
   createStyles({
@@ -10,7 +10,7 @@ const useStyles = makeStyles(() =>
       textTransform: 'uppercase',
       marginBottom: '2rem',
     },
-  })
+  }),
 );
 
 const PageTitle: FC<PageTitleProps> = ({ title }) => {
