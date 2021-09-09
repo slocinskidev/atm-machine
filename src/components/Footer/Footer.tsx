@@ -1,9 +1,8 @@
 import { FC, ReactElement } from 'react';
 import { makeStyles, createStyles, Theme, Link } from '@material-ui/core';
 
-import { FooterProps } from './model';
-
 import { FOOTER_TEXT, FOOTER_HEIGHT, FOOTER_URL } from 'utils/constants';
+import { FooterProps } from './model.d';
 
 const useStyles = makeStyles((theme: Theme) =>
   createStyles({
@@ -15,7 +14,7 @@ const useStyles = makeStyles((theme: Theme) =>
       background: theme.palette.background.paper,
       minHeight: FOOTER_HEIGHT,
     },
-  })
+  }),
 );
 
 const Footer: FC<FooterProps> = (): ReactElement => {
