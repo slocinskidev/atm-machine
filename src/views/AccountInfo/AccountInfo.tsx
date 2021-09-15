@@ -1,31 +1,36 @@
 import { FC, ReactElement } from 'react';
+import { useSelector } from 'react-redux';
+import { RootState } from 'store';
 import { Helmet } from 'react-helmet';
-import { makeStyles } from '@material-ui/core/styles';
+import { makeStyles, createStyles, Theme } from '@material-ui/core/styles';
 import Grid from '@material-ui/core/Grid';
+import Button from '@material-ui/core/Button';
 import List from '@material-ui/core/List';
 import ListItem from '@material-ui/core/ListItem';
 import ListItemText from '@material-ui/core/ListItemText';
 import { Link as RouterLink } from 'react-router-dom';
+
+import routes from 'routes';
 
 import PageTitle from 'components/PageTitle';
 
 import { APP_TITLE, VIEW_TITLE_ACCOUNT_INFO } from 'utils/constants';
 import { AccountInfoProps } from './model.d';
 
-const useStyles = makeStyles((theme) => ({
-  listItem: {
-    margin: '10px 0',
-    width: '320px',
-    backgroundColor: theme.palette.primary.main,
-  },
-  listItemText: {
-    textAlign: 'center',
-    color: '#fff',
-  },
-}));
+const useStyles = makeStyles((theme: Theme) =>
+  createStyles({
+    root: {
+      padding: theme.spacing(1),
+      justifyContent: 'center',
+    },
+  })
+);
 
 const AccountInfo: FC<AccountInfoProps> = (): ReactElement => {
   const classes = useStyles();
+
+  const { owner, balance, currency } = useSelector((state: RootState) => state.account);
+
   return (
     <>
       <Helmet>
@@ -34,25 +39,27 @@ const AccountInfo: FC<AccountInfoProps> = (): ReactElement => {
         </title>
       </Helmet>
       <PageTitle title={VIEW_TITLE_ACCOUNT_INFO} />
-      <List component="nav" aria-label="secondary mailbox folders">
-        <Grid container direction="row" justifyContent="space-between" alignItems="center">
-          <Grid item>
-            <ListItem className={classes.listItem} button component={RouterLink} to="/withdraw">
-              <ListItemText className={classes.listItemText} primary="Withdraw" />
+      <Grid container spacing={3} className={classes.root}>
+        <Grid item xs={12} md={4}>
+          <List aria-label="account details info">
+            <ListItem button>
+              <ListItemText primary="Owner" secondary={owner} />
             </ListItem>
-          </Grid>
-          <Grid item>
-            <ListItem className={classes.listItem} button component={RouterLink} to="/account-info">
-              <ListItemText className={classes.listItemText} primary="Account info" />
+            <ListItem button>
+              <ListItemText primary="Balance" secondary={`${balance} ${currency}`} />
             </ListItem>
-          </Grid>
-          <Grid item>
-            <ListItem className={classes.listItem} button component={RouterLink} to="/">
-              <ListItemText className={classes.listItemText} primary="Logout" />
-            </ListItem>
-          </Grid>
+          </List>
+          <Button
+            component={RouterLink}
+            to={routes.menu}
+            variant="contained"
+            color="primary"
+            fullWidth
+          >
+            Back
+          </Button>
         </Grid>
-      </List>
+      </Grid>
     </>
   );
 };

@@ -1,72 +1,89 @@
-import { FC, ReactElement, useState, ReactNode } from 'react';
+import { FC, ReactElement, useState } from 'react';
 import { Helmet } from 'react-helmet';
-import { makeStyles, createStyles } from '@material-ui/core/styles';
-import Stepper from '@material-ui/core/Stepper';
-import Step from '@material-ui/core/Step';
-import StepLabel from '@material-ui/core/StepLabel';
-import Button from '@material-ui/core/Button';
-import Typography from '@material-ui/core/Typography';
+import { Redirect } from 'react-router-dom';
+import { createStyles, makeStyles, Theme } from '@material-ui/core/styles';
+import { useForm, Controller, SubmitHandler } from 'react-hook-form';
+import { yupResolver } from '@hookform/resolvers/yup';
+import * as yup from 'yup';
+import { RootState } from 'store';
+import { useSelector } from 'react-redux';
 
-import Grid from '@material-ui/core/Grid';
-import TextField from '@material-ui/core/TextField';
-import { Link } from 'react-router-dom';
+import routes from 'routes';
 
 import PageTitle from 'components/PageTitle';
 
 import { APP_TITLE, VIEW_TITLE_LOGIN } from 'utils/constants';
+import { Button, TextField } from '@material-ui/core';
+import Grid from '@material-ui/core/Grid';
 import { LoginProps } from './model.d';
 
-const useStyles = makeStyles((theme) =>
+interface IFormInputs {
+  cardNumber: number;
+  pin: number;
+}
+
+const schema = yup.object().shape({
+  cardNumber: yup
+    .number()
+    .test('len', 'Must be exactly 8 numbers', (val) => val?.toString().length === 8)
+    .typeError('Must be number')
+    .positive()
+    .integer()
+    .required(),
+  pin: yup
+    .number()
+    .test('val', 'Must be exactly 4 numbers', (val) => val?.toString().length === 4)
+    .typeError('Must be number')
+    .positive()
+    .integer()
+    .required(),
+});
+
+const useStyles = makeStyles((theme: Theme) =>
   createStyles({
-    root: {
-      flex: 1,
-      display: 'flex',
-      flexDirection: 'row',
-      justifyContent: 'center',
+    form: {
+      padding: theme.spacing(1),
     },
-    button: {
-      marginRight: theme.spacing(1),
-    },
-    instructions: {
-      marginTop: theme.spacing(1),
+    input: {
       marginBottom: theme.spacing(1),
+    },
+    errorMeassage: {
+      color: theme.palette.error.main,
     },
   })
 );
 
-const getSteps = () => ['Enter card number', 'Enter PIN'];
-
-const getStepContent = (step: number) => {
-  switch (step) {
-    case 0:
-      return (
-        <TextField
-          id="outlined-card-number-input"
-          label="Card number"
-          type="text"
-          variant="outlined"
-          fullWidth
-        />
-      );
-    case 1:
-      return <TextField id="outlined-pin-input" label="PIN" type="password" variant="outlined" />;
-    default:
-      return 'Unknown step';
-  }
-};
-
 const Login: FC<LoginProps> = (): ReactElement => {
   const classes = useStyles();
-  const [activeStep, setActiveStep] = useState(0);
-  const steps = getSteps();
 
-  const handleNext = () => {
-    setActiveStep((prevActiveStep) => prevActiveStep + 1);
+  const { cardNumber, pin } = useSelector((state: RootState) => state.account);
+
+  const [hasLoggedIn, setHasLoggedIn] = useState(false);
+  const [errorMessage, setErrorMessage] = useState<string | null>(null);
+
+  const { handleSubmit, control } = useForm({
+    mode: 'onBlur',
+    resolver: yupResolver(schema),
+    shouldFocusError: true,
+    criteriaMode: 'all',
+    reValidateMode: 'onChange',
+  });
+
+  const onSubmit: SubmitHandler<IFormInputs> = (user) => {
+    const isCorrectCardNumber: boolean = Object.is(user.cardNumber, cardNumber);
+    const isCorrectPin: boolean = Object.is(user.pin, pin);
+    const canLogin = isCorrectCardNumber && isCorrectPin;
+    try {
+      if (!canLogin) throw new Error('Wrong account details');
+      setHasLoggedIn(canLogin);
+    } catch (error) {
+      if (error instanceof Error) setErrorMessage(error?.message);
+    }
   };
 
-  const handleBack = () => {
-    setActiveStep((prevActiveStep) => prevActiveStep - 1);
-  };
+  if (hasLoggedIn) {
+    return <Redirect to={routes.menu} />;
+  }
 
   return (
     <>
@@ -77,53 +94,52 @@ const Login: FC<LoginProps> = (): ReactElement => {
       </Helmet>
       <PageTitle title={VIEW_TITLE_LOGIN} />
       <Grid container spacing={3} justifyContent="center">
-        <Grid item xs={12}>
-          <Stepper activeStep={activeStep}>
-            {steps.map((label) => {
-              const stepProps: { completed?: boolean } = {};
-              const labelProps: { optional?: ReactNode } = {};
+        <Grid item xs={12} md={4}>
+          <form
+            className={classes.form}
+            noValidate
+            autoComplete="off"
+            onSubmit={handleSubmit(onSubmit)}
+          >
+            <Controller
+              name="cardNumber"
+              control={control}
+              defaultValue="12345678"
+              render={({ field: { onChange, value }, fieldState: { error } }) => (
+                <TextField
+                  className={classes.input}
+                  label="Card Number"
+                  variant="outlined"
+                  value={value}
+                  onChange={onChange}
+                  error={!!error}
+                  helperText={error ? error.message : null}
+                  fullWidth
+                />
+              )}
+            />
+            <Controller
+              name="pin"
+              control={control}
+              defaultValue="1234"
+              render={({ field: { onChange, value }, fieldState: { error } }) => (
+                <TextField
+                  className={classes.input}
+                  label="Pin"
+                  variant="outlined"
+                  value={value}
+                  onChange={onChange}
+                  error={!!error}
+                  helperText={error ? error.message : null}
+                  fullWidth
+                />
+              )}
+            />
 
-              return (
-                <Step key={label} {...stepProps}>
-                  <StepLabel {...labelProps}>{label}</StepLabel>
-                </Step>
-              );
-            })}
-          </Stepper>
-        </Grid>
-        <Grid item xs={12} sm={6}>
-          <form className={classes.root} noValidate autoComplete="off">
-            {activeStep === steps.length ? (
-              <div>
-                <Typography className={classes.instructions}>You have been logged in!</Typography>
-                <Button variant="contained" color="primary" component={Link} to="/menu">
-                  Next
-                </Button>
-              </div>
-            ) : (
-              <div>
-                <Typography className={classes.instructions}>
-                  {getStepContent(activeStep)}
-                </Typography>
-                <div>
-                  <Button
-                    disabled={activeStep === 0}
-                    onClick={handleBack}
-                    className={classes.button}
-                  >
-                    Back
-                  </Button>
-                  <Button
-                    variant="contained"
-                    color="primary"
-                    onClick={handleNext}
-                    className={classes.button}
-                  >
-                    {activeStep === steps.length - 1 ? 'Finish' : 'Next'}
-                  </Button>
-                </div>
-              </div>
-            )}
+            <Button type="submit" variant="contained" color="primary" fullWidth>
+              Login
+            </Button>
+            {errorMessage && <p className={classes.errorMeassage}>{errorMessage}</p>}
           </form>
         </Grid>
       </Grid>

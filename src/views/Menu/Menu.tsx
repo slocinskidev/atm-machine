@@ -7,6 +7,8 @@ import ListItem from '@material-ui/core/ListItem';
 import ListItemText from '@material-ui/core/ListItemText';
 import { Link as RouterLink } from 'react-router-dom';
 
+import routes from 'routes';
+
 import PageTitle from 'components/PageTitle';
 
 import { APP_TITLE, VIEW_TITLE_MENU } from 'utils/constants';
@@ -34,20 +36,30 @@ const Menu: FC<MenuProps> = (): ReactElement => {
         </title>
       </Helmet>
       <PageTitle title={VIEW_TITLE_MENU} />
-      <List component="nav" aria-label="secondary mailbox folders">
+      <List component="nav" aria-label="login menu">
         <Grid container direction="row" justifyContent="space-between" alignItems="center">
           <Grid item>
-            <ListItem className={classes.listItem} button component={RouterLink} to="/withdraw">
+            <ListItem
+              className={classes.listItem}
+              button
+              component={RouterLink}
+              to={routes.withdraw}
+            >
               <ListItemText className={classes.listItemText} primary="Withdraw" />
             </ListItem>
           </Grid>
           <Grid item>
-            <ListItem className={classes.listItem} button component={RouterLink} to="/account-info">
+            <ListItem
+              className={classes.listItem}
+              button
+              component={RouterLink}
+              to={routes.accountInfo}
+            >
               <ListItemText className={classes.listItemText} primary="Account info" />
             </ListItem>
           </Grid>
           <Grid item>
-            <ListItem className={classes.listItem} button component={RouterLink} to="/">
+            <ListItem className={classes.listItem} button component={RouterLink} to={routes.login}>
               <ListItemText className={classes.listItemText} primary="Logout" />
             </ListItem>
           </Grid>
