@@ -1,31 +1,33 @@
 import { FC, ReactElement } from 'react';
 import { Helmet } from 'react-helmet';
-import { makeStyles } from '@material-ui/core/styles';
+import { makeStyles, createStyles, Theme } from '@material-ui/core/styles';
+import Button from '@material-ui/core/Button';
 import Grid from '@material-ui/core/Grid';
 import List from '@material-ui/core/List';
 import ListItem from '@material-ui/core/ListItem';
 import ListItemText from '@material-ui/core/ListItemText';
 import { Link as RouterLink } from 'react-router-dom';
 
+import { withdrawOptions, APP_TITLE, VIEW_TITLE_WITHDRAW } from 'utils/constants';
+
+import routes from 'routes';
+
 import PageTitle from 'components/PageTitle';
 
-import { APP_TITLE, VIEW_TITLE_WITHDRAW } from 'utils/constants';
 import { WithdrawProps } from './model.d';
 
-const useStyles = makeStyles((theme) => ({
-  listItem: {
-    margin: '10px 0',
-    width: '320px',
-    backgroundColor: theme.palette.primary.main,
-  },
-  listItemText: {
-    textAlign: 'center',
-    color: '#fff',
-  },
-}));
+const useStyles = makeStyles((theme: Theme) =>
+  createStyles({
+    root: {
+      padding: theme.spacing(1),
+      justifyContent: 'center',
+    },
+  })
+);
 
 const Withdraw: FC<WithdrawProps> = (): ReactElement => {
   const classes = useStyles();
+
   return (
     <>
       <Helmet>
@@ -34,25 +36,26 @@ const Withdraw: FC<WithdrawProps> = (): ReactElement => {
         </title>
       </Helmet>
       <PageTitle title={VIEW_TITLE_WITHDRAW} />
-      <List component="nav" aria-label="secondary mailbox folders">
-        <Grid container direction="row" justifyContent="space-between" alignItems="center">
-          <Grid item>
-            <ListItem className={classes.listItem} button component={RouterLink} to="/withdraw">
-              <ListItemText className={classes.listItemText} primary="Withdraw" />
-            </ListItem>
-          </Grid>
-          <Grid item>
-            <ListItem className={classes.listItem} button component={RouterLink} to="/account-info">
-              <ListItemText className={classes.listItemText} primary="Account info" />
-            </ListItem>
-          </Grid>
-          <Grid item>
-            <ListItem className={classes.listItem} button component={RouterLink} to="/">
-              <ListItemText className={classes.listItemText} primary="Logout" />
-            </ListItem>
-          </Grid>
+      <Grid container spacing={3} className={classes.root}>
+        <Grid item xs={12} md={4}>
+          <List aria-label="withdraw choice">
+            {Object.values(withdrawOptions).map((option) => (
+              <ListItem button>
+                <ListItemText primary={`${option} ${typeof option === 'number' ? 'PLN' : ''}`} />
+              </ListItem>
+            ))}
+          </List>
+          <Button
+            component={RouterLink}
+            to={routes.menu}
+            variant="contained"
+            color="primary"
+            fullWidth
+          >
+            Back
+          </Button>
         </Grid>
-      </List>
+      </Grid>
     </>
   );
 };

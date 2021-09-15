@@ -1,7 +1,9 @@
-import { useReducer, createContext, FC, ReactElement } from 'react';
+import { useReducer, FC, ReactElement } from 'react';
 import { createTheme, Theme, responsiveFontSizes, ThemeProvider } from '@material-ui/core/styles';
 import { BrowserRouter as Router, Switch, Route } from 'react-router-dom';
 import { Helmet } from 'react-helmet';
+import { Provider } from 'react-redux';
+import CssBaseline from '@material-ui/core/CssBaseline';
 
 import Layout from 'templates/Layout';
 import Login from 'views/Login';
@@ -13,10 +15,9 @@ import { lightTheme, darkTheme } from 'theme';
 
 import { APP_TITLE } from 'utils/constants';
 import routes from 'routes';
+import { store } from 'store';
 
 import { RootProps } from './model.d';
-
-const AppContext = createContext(null);
 
 const App: FC<RootProps> = (): ReactElement => {
   const [useDefaultTheme, toggle] = useReducer((theme: Theme | boolean) => !theme, true);
@@ -29,7 +30,8 @@ const App: FC<RootProps> = (): ReactElement => {
       <Helmet>
         <title>{APP_TITLE}</title>
       </Helmet>
-      <AppContext.Provider value={null}>
+      <CssBaseline />
+      <Provider store={store}>
         <ThemeProvider theme={theme}>
           <Router>
             <Switch>
@@ -50,7 +52,7 @@ const App: FC<RootProps> = (): ReactElement => {
             </Switch>
           </Router>
         </ThemeProvider>
-      </AppContext.Provider>
+      </Provider>
     </>
   );
 };
