@@ -5,9 +5,14 @@ import Grid from '@material-ui/core/Grid';
 import List from '@material-ui/core/List';
 import ListItem from '@material-ui/core/ListItem';
 import ListItemText from '@material-ui/core/ListItemText';
-import { Link as RouterLink } from 'react-router-dom';
+import { Link as RouterLink, Redirect } from 'react-router-dom';
+
+import { RootState } from 'store';
 
 import routes from 'routes';
+
+import { useAppDispatch, useAppSelector } from 'utils/hooks';
+import { logout } from 'features/user/userSlice';
 
 import PageTitle from 'components/PageTitle';
 
@@ -28,6 +33,18 @@ const useStyles = makeStyles((theme) => ({
 
 const Menu: FC<MenuProps> = (): ReactElement => {
   const classes = useStyles();
+
+  const { account } = useAppSelector((state: RootState) => state.user);
+  const dispatch = useAppDispatch();
+
+  const logOut = () => {
+    dispatch(logout());
+  };
+
+  if (!account) {
+    return <Redirect to={routes.login} />;
+  }
+
   return (
     <>
       <Helmet>
@@ -37,7 +54,7 @@ const Menu: FC<MenuProps> = (): ReactElement => {
       </Helmet>
       <PageTitle title={VIEW_TITLE_MENU} />
       <List component="nav" aria-label="login menu">
-        <Grid container direction="row" justifyContent="space-between" alignItems="center">
+        <Grid container direction="column" justifyContent="space-between" alignItems="center">
           <Grid item>
             <ListItem
               className={classes.listItem}
@@ -59,7 +76,7 @@ const Menu: FC<MenuProps> = (): ReactElement => {
             </ListItem>
           </Grid>
           <Grid item>
-            <ListItem className={classes.listItem} button component={RouterLink} to={routes.login}>
+            <ListItem className={classes.listItem} button onClick={logOut}>
               <ListItemText className={classes.listItemText} primary="Logout" />
             </ListItem>
           </Grid>

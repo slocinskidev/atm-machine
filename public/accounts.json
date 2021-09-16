@@ -1,0 +1,16 @@
+[
+  {
+    "owner": "Eryk Słociński",
+    "cardNumber": 12345678,
+    "pin": 1234,
+    "balance": 100,
+    "currency": "PLN"
+  },
+  {
+    "owner": "Jan Kowalski",
+    "cardNumber": 87654321,
+    "pin": 4321,
+    "balance": 10000,
+    "currency": "PLN"
+  }
+]

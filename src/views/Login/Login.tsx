@@ -1,4 +1,4 @@
-import { FC, ReactElement, useState } from 'react';
+import { FC, ReactElement } from 'react';
 import { Helmet } from 'react-helmet';
 import { Redirect } from 'react-router-dom';
 import { createStyles, makeStyles, Theme } from '@material-ui/core/styles';
@@ -6,9 +6,11 @@ import { useForm, Controller, SubmitHandler } from 'react-hook-form';
 import { yupResolver } from '@hookform/resolvers/yup';
 import * as yup from 'yup';
 import { RootState } from 'store';
-import { useSelector } from 'react-redux';
 
 import routes from 'routes';
+
+import { useAppDispatch, useAppSelector } from 'utils/hooks';
+import { login } from 'features/user/userSlice';
 
 import PageTitle from 'components/PageTitle';
 
@@ -56,10 +58,11 @@ const useStyles = makeStyles((theme: Theme) =>
 const Login: FC<LoginProps> = (): ReactElement => {
   const classes = useStyles();
 
-  const { cardNumber, pin } = useSelector((state: RootState) => state.account);
-
-  const [hasLoggedIn, setHasLoggedIn] = useState(false);
-  const [errorMessage, setErrorMessage] = useState<string | null>(null);
+  const {
+    account,
+    error: { message },
+  } = useAppSelector((state: RootState) => state.user);
+  const dispatch = useAppDispatch();
 
   const { handleSubmit, control } = useForm({
     mode: 'onBlur',
@@ -69,19 +72,11 @@ const Login: FC<LoginProps> = (): ReactElement => {
     reValidateMode: 'onChange',
   });
 
-  const onSubmit: SubmitHandler<IFormInputs> = (user) => {
-    const isCorrectCardNumber: boolean = Object.is(user.cardNumber, cardNumber);
-    const isCorrectPin: boolean = Object.is(user.pin, pin);
-    const canLogin = isCorrectCardNumber && isCorrectPin;
-    try {
-      if (!canLogin) throw new Error('Wrong account details');
-      setHasLoggedIn(canLogin);
-    } catch (error) {
-      if (error instanceof Error) setErrorMessage(error?.message);
-    }
+  const logIn: SubmitHandler<IFormInputs> = (logInData) => {
+    dispatch(login(logInData));
   };
 
-  if (hasLoggedIn) {
+  if (account) {
     return <Redirect to={routes.menu} />;
   }
 
@@ -99,7 +94,7 @@ const Login: FC<LoginProps> = (): ReactElement => {
             className={classes.form}
             noValidate
             autoComplete="off"
-            onSubmit={handleSubmit(onSubmit)}
+            onSubmit={handleSubmit(logIn)}
           >
             <Controller
               name="cardNumber"
@@ -139,7 +134,7 @@ const Login: FC<LoginProps> = (): ReactElement => {
             <Button type="submit" variant="contained" color="primary" fullWidth>
               Login
             </Button>
-            {errorMessage && <p className={classes.errorMeassage}>{errorMessage}</p>}
+            {message && <p className={classes.errorMeassage}>{message}</p>}
           </form>
         </Grid>
       </Grid>

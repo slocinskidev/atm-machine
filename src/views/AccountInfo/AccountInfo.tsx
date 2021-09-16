@@ -29,7 +29,7 @@ const useStyles = makeStyles((theme: Theme) =>
 const AccountInfo: FC<AccountInfoProps> = (): ReactElement => {
   const classes = useStyles();
 
-  const { owner, balance, currency } = useSelector((state: RootState) => state.account);
+  const { account } = useSelector((state: RootState) => state.user);
 
   return (
     <>
@@ -41,14 +41,22 @@ const AccountInfo: FC<AccountInfoProps> = (): ReactElement => {
       <PageTitle title={VIEW_TITLE_ACCOUNT_INFO} />
       <Grid container spacing={3} className={classes.root}>
         <Grid item xs={12} md={4}>
-          <List aria-label="account details info">
-            <ListItem button>
-              <ListItemText primary="Owner" secondary={owner} />
-            </ListItem>
-            <ListItem button>
-              <ListItemText primary="Balance" secondary={`${balance} ${currency}`} />
-            </ListItem>
-          </List>
+          {account ? (
+            <List aria-label="account details info">
+              <ListItem button>
+                <ListItemText primary="Owner" secondary={account?.owner} />
+              </ListItem>
+              <ListItem button>
+                <ListItemText
+                  primary="Balance"
+                  secondary={`${account?.balance} ${account?.currency}`}
+                />
+              </ListItem>
+            </List>
+          ) : (
+            <h2>Sorry, we dont have your account details</h2>
+          )}
+
           <Button
             component={RouterLink}
             to={routes.menu}

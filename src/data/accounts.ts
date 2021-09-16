@@ -7,7 +7,6 @@ const accounts: AccountState[] = [
     pin: 1234,
     balance: 100,
     currency: 'PLN',
-    isLggedIn: false,
   },
 ];
 

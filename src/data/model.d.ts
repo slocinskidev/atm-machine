@@ -4,5 +4,4 @@ export interface AccountState {
   pin: number;
   balance: number;
   currency: string;
-  isLggedIn: boolean;
 }
