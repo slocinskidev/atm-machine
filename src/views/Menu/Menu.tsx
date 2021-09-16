@@ -72,7 +72,7 @@ const Menu: FC<MenuProps> = (): ReactElement => {
               component={RouterLink}
               to={routes.accountInfo}
             >
-              <ListItemText className={classes.listItemText} primary="Account info" />
+              <ListItemText className={classes.listItemText} primary="Account details" />
             </ListItem>
           </Grid>
           <Grid item>

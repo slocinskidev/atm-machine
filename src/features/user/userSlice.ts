@@ -1,19 +1,6 @@
 import { createSlice, PayloadAction } from '@reduxjs/toolkit';
 import axios from 'axios';
-import { AccountState } from 'data/model.d';
-
-interface ILogInData {
-  cardNumber: number;
-  pin: number;
-}
-
-interface IUserState {
-  account: AccountState | null | undefined;
-  error: {
-    status: boolean;
-    message: string;
-  };
-}
+import { IAccountState, IUserState, TAccount, ILoginValues } from 'shared/types.d';
 
 const userInitialState: IUserState = {
   account: null,
@@ -27,7 +14,7 @@ const userSlice = createSlice({
   name: 'user',
   initialState: userInitialState,
   reducers: {
-    loginSuccess(state, action: PayloadAction<null | undefined | AccountState>) {
+    loginSuccess(state, action: PayloadAction<TAccount>) {
       state.account = action.payload;
       state.error.status = false;
       state.error.message = '';
@@ -47,17 +34,16 @@ export default userSlice.reducer;
 const { loginSuccess, logoutSuccess, loginError } = userSlice.actions;
 
 export const login =
-  ({ cardNumber, pin }: ILogInData) =>
-  // eslint-disable-next-line consistent-return
+  ({ cardNumber, pin }: ILoginValues) =>
   async (dispatch: any) => {
     try {
       const { data } = await axios.get('accounts.json');
-      const loginAccount: AccountState = data?.find(
-        (acc: ILogInData): boolean => acc.cardNumber === cardNumber && acc.pin === pin
+      const loggedAccount: IAccountState = data?.find(
+        (account: ILoginValues): boolean => account.cardNumber === cardNumber && account.pin === pin
       );
-      if (loginAccount === undefined) throw new Error('Wrong account details');
-      dispatch(loginSuccess(loginAccount));
-    } catch (error) {
+      if (!loggedAccount) throw new Error('Wrong account details');
+      dispatch(loginSuccess(loggedAccount));
+    } catch (error: unknown) {
       if (error instanceof Error) {
         dispatch(loginError(error?.message));
       }
